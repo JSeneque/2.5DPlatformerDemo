@@ -7,15 +7,15 @@ public class UIManager : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _tmpCoinText;
     [SerializeField] private TextMeshProUGUI _tmpLivesText;
-    [SerializeField] private int _coinCounter;
+    
 
     private void Awake()
     {
         Player player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-        player.OnPlayerCoinCollected += Player_OnPlayerCoinCollected;
+        player.OnPlayerCoinCollected += HandleOnPlayerCoinCollected;
         player.OnPlayerLivesChange += HandleOnPlayerLivesChange;
 
-        UpdateCoinsDisplay();
+        UpdateCoinsDisplay(0);
     }
 
     private void HandleOnPlayerLivesChange(int lives)
@@ -23,16 +23,15 @@ public class UIManager : MonoBehaviour
         UpdateLivesDisplay(lives);
     }
 
-    private void Player_OnPlayerCoinCollected(object sender, System.EventArgs e)
+    private void HandleOnPlayerCoinCollected(int coins)
     {
-        _coinCounter++;
-        UpdateCoinsDisplay();
+        UpdateCoinsDisplay(coins);
     }
 
 
-    private void UpdateCoinsDisplay()
+    private void UpdateCoinsDisplay(int coins)
     {
-        _tmpCoinText.text = "Coins " + _coinCounter.ToString();
+        _tmpCoinText.text = "Coins " + coins.ToString();
     }
 
     private void UpdateLivesDisplay(int amount)

@@ -15,12 +15,13 @@ public class Player : MonoBehaviour
     private float _yVelocity;
     private bool _canDoubleJump;
     private int _lives = 3;
+    private int _coinAmount;
     private Vector3 velocity;
 
-    public event EventHandler OnPlayerCoinCollected;
+    public event Action<int> OnPlayerCoinCollected;
     public event Action<int> OnPlayerLivesChange;
-
-
+    public int CoinAmount { get; private set; }
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -72,7 +73,11 @@ public class Player : MonoBehaviour
 
     public void CoinCollected()
     {
-       OnPlayerCoinCollected?.Invoke(this, EventArgs.Empty);
+        CoinAmount++;
+       
+        if (OnPlayerCoinCollected != null)
+            OnPlayerCoinCollected(CoinAmount);
+
     }
 
     private void OnTriggerEnter(Collider other)
@@ -98,8 +103,6 @@ public class Player : MonoBehaviour
 
     private void Respawn()
     {
-        Debug.Log("Player is respawning");
-
         _controller.enabled = false;
 
         velocity.y = 0.0f;

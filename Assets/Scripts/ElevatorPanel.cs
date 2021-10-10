@@ -4,17 +4,15 @@ using UnityEngine;
 
 public class ElevatorPanel : MonoBehaviour
 {
-    [SerializeField] GameObject _LED;
-
-    private MeshRenderer _LEDMeshRenderer;
+    [SerializeField] MeshRenderer _LEDMeshRenderer;
+    [SerializeField] int _CoinsRequired = 4;
+    [SerializeField] Elevator _target;
 
     private void Awake()
     {
-        _LEDMeshRenderer = _LED.GetComponent<MeshRenderer>();
-
-        if (_LEDMeshRenderer == null)
+        if(_target == null)
         {
-            Debug.LogError("Something went wrong with getting the LED Mesh Renderer");
+            Debug.LogError("The target elevator has not been set");
         }
     }
 
@@ -22,11 +20,34 @@ public class ElevatorPanel : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            if (Input.GetButtonDown("Fire1"))
+            // get the number of coins on the player
+            Player player = other.GetComponent<Player>();
+            if (player == null)
             {
-                _LEDMeshRenderer.material.color = Color.green;
+                Debug.LogError(gameObject.name + " couldn't find the Player script");
             }
-                
+            
+            if (Input.GetButton("Fire1"))
+            {
+                if (player.CoinAmount >= _CoinsRequired)
+                {
+                    if (_LEDMeshRenderer == null)
+                    {
+                        Debug.LogError("Something went wrong with getting the LED Mesh Renderer");
+                    }
+                    else
+                    {
+                        _LEDMeshRenderer.material.color = Color.green;
+
+                        // call elevator
+                        _target.CallElevator();
+                    }
+                }
+                else
+                {
+                    Debug.Log("Not enough coins");
+                }
+            }
         }
     }
 

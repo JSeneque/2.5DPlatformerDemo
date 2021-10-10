@@ -108,6 +108,7 @@ GameObject:
   - component: {fileID: 5385428986830973203}
   - component: {fileID: 5385428986830973200}
   - component: {fileID: 5385428986830973205}
+  - component: {fileID: 619864973}
   m_Layer: 0
   m_Name: ElevatorPanel
   m_TagString: Untagged
@@ -124,7 +125,7 @@ Transform:
   m_GameObject: {fileID: 5385428986830973214}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 51.75, y: 5.5, z: 1}
-  m_LocalScale: {x: 2, y: 4, z: 1}
+  m_LocalScale: {x: 2, y: 4, z: 0.1}
   m_Children:
   - {fileID: 5385428986023655499}
   m_Father: {fileID: 0}
@@ -200,8 +201,23 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5385428986830973214}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.5, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: -1}
+  m_Size: {x: 1.5, y: 1, z: 9.525303}
+  m_Center: {x: 0, y: 0, z: -5.262652}
+--- !u!114 &619864973
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5385428986830973214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3a606dd64193c2418a117d40c9ffe42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _LEDMeshRenderer: {fileID: 5385428986023655501}
+  _CoinsRequired: 4
+  _target: {fileID: 0}
