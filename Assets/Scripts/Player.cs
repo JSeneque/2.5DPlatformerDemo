@@ -2,18 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
     [SerializeField] private float _speed;
     [SerializeField] private float _gravity = 10.0f;
     [SerializeField] private float _jumpHeight = 15.0f;
+    [SerializeField] private Transform _spawnPoint;
 
     private CharacterController _controller;
     private float _yVelocity;
     private bool _canDoubleJump;
+    private int _lives = 3;
+    private Vector3 velocity;
 
     public event EventHandler OnPlayerCoinCollected;
+    public event Action<int> OnPlayerLivesChange;
+
 
     // Start is called before the first frame update
     void Start()
@@ -34,7 +40,7 @@ public class Player : MonoBehaviour
         // calculate direction
         Vector3 direction = new Vector3(horizontalInput, 0, 0);
         // velocity (direction with speed)
-        Vector3 velocity = direction * _speed;
+        velocity = direction * _speed;
 
         // apply gravity
         if (_controller.isGrounded)
@@ -60,11 +66,51 @@ public class Player : MonoBehaviour
         velocity.y = _yVelocity;
 
         // move player
-        _controller.Move(velocity * Time.deltaTime);
+        if (_controller.enabled)
+            _controller.Move(velocity * Time.deltaTime);
     }
 
     public void CoinCollected()
     {
-        if(OnPlayerCoinCollected != null) OnPlayerCoinCollected(this, EventArgs.Empty);
+       OnPlayerCoinCollected?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Killzone")
+        {
+            _lives--;
+
+            // trigger event and pass lives amount
+            if (OnPlayerLivesChange != null)
+                OnPlayerLivesChange(_lives);
+
+            if (_lives <= 0)
+            {
+                SceneManager.LoadScene(0);
+            }
+            else
+            {
+                Respawn();
+            }
+        }
+    }
+
+    private void Respawn()
+    {
+        Debug.Log("Player is respawning");
+
+        _controller.enabled = false;
+
+        velocity.y = 0.0f;
+        transform.position = _spawnPoint.position;
+
+        StartCoroutine(EnableCharacterController());
+    }
+
+    IEnumerator EnableCharacterController()
+    {
+        yield return new WaitForSeconds(0.5f);
+        _controller.enabled = true;
     }
 }
