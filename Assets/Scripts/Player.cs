@@ -14,9 +14,12 @@ public class Player : MonoBehaviour
     private CharacterController _controller;
     private float _yVelocity;
     private bool _canDoubleJump;
+    private bool _canWallJump;
     private int _lives = 3;
     private int _coinAmount;
-    private Vector3 velocity;
+    private Vector3 _direction;
+    private Vector3 _velocity;
+    private Vector3 _surfaceNormal;
 
     public event Action<int> OnPlayerCoinCollected;
     public event Action<int> OnPlayerLivesChange;
@@ -38,37 +41,48 @@ public class Player : MonoBehaviour
     {
         // get input
         float horizontalInput = Input.GetAxis("Horizontal");
-        // calculate direction
-        Vector3 direction = new Vector3(horizontalInput, 0, 0);
-        // velocity (direction with speed)
-        velocity = direction * _speed;
 
         // apply gravity
         if (_controller.isGrounded)
         {
+            _canWallJump = false;
+
+            // calculate direction
+            _direction = new Vector3(horizontalInput, 0, 0);
+            // velocity (direction with speed)
+            _velocity = _direction * _speed;
+            
             if (Input.GetButtonDown("Jump"))
             {
                 _yVelocity = _jumpHeight;
                 _canDoubleJump = true;
             }
-            
         } 
         else
         {
-            if (Input.GetButtonDown("Jump") && _canDoubleJump)
+            if (Input.GetButtonDown("Jump") && _canDoubleJump && !_canWallJump)
             {
                 _canDoubleJump = false;
                 _yVelocity = _jumpHeight;
+            } 
+            else if (Input.GetButtonDown("Jump") && _canWallJump)
+            {
+                // velocity = surface normal of the wall
+                _yVelocity = _jumpHeight;
+                _velocity = _surfaceNormal * _speed;
+                
             }
+
+
 
             _yVelocity -= _gravity;
         }
 
-        velocity.y = _yVelocity;
+        _velocity.y = _yVelocity;
 
         // move player
         if (_controller.enabled)
-            _controller.Move(velocity * Time.deltaTime);
+            _controller.Move(_velocity * Time.deltaTime);
     }
 
     public void CoinCollected()
@@ -101,11 +115,22 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        // if not grounded and touching a wall
+        if (!_controller.isGrounded && hit.transform.tag == "Wall")
+        {
+            _canWallJump = true;
+            _surfaceNormal = hit.normal;
+        }
+            
+    }
+
     private void Respawn()
     {
         _controller.enabled = false;
 
-        velocity.y = 0.0f;
+        _velocity.y = 0.0f;
         transform.position = _spawnPoint.position;
 
         StartCoroutine(EnableCharacterController());

@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Killzone
+  - Wall
   layers:
   - Default
   - TransparentFX
