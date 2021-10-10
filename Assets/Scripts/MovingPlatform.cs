@@ -16,7 +16,7 @@ public class MovingPlatform : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         // calculate next position
         if (transform.position == _pointB.position)
@@ -30,5 +30,21 @@ public class MovingPlatform : MonoBehaviour
 
 
         transform.position = Vector3.MoveTowards(transform.position, _nextPoint, _speed * Time.deltaTime);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Player")
+        {
+            other.transform.parent = this.transform;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Player")
+        {
+            other.transform.parent = null;
+        }
     }
 }
