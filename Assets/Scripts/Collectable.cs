@@ -8,7 +8,17 @@ public class Collectable : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            other.GetComponent<Player>().CoinCollected();
+            Player player = other.GetComponent<Player>();
+            if (player == null)
+            {
+                Debug.LogError("Player script missing on Player");
+            }
+            else
+            {
+                player.CoinCollected();
+            }
+
+            // destroy the coin
             Destroy(this.gameObject);
         }
     }
